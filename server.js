@@ -3,7 +3,15 @@ var app = express();
 var bodyParser = require('body-parser');
 app.use(bodyParser.json())
 
-require('./app/routes/customer.routes.js')(app);
+const cors = require('cors')
+const corsOptions = {
+  origin: 'http://localhost:4200',
+  optionsSuccessStatus: 200
+}
+app.use(cors(corsOptions))
+
+let customerRouter = require('./app/routes/customer.routes.js');
+app.use('/', customerRouter);
 
 // Create a Server
 var server = app.listen(8081, function () {
