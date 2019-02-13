@@ -1,67 +1,57 @@
 var customers = {
 				customer1: {
+					id: 1,
 					firstname: "Shilpi",
 					lastname: "Saini",
-					age: 26,
-					id: 1
+					age: 26
 				},
 				customer2: {
+					id: 2,
 					firstname: "Ankita",
 					lastname: "Saini",
-					age: 21,
-					id: 2
+					age: 21
 				},
 				customer3: {
+					id: 3,
 					firstname: "Dheeraj",
 					lastname: "Saini",
-					age: 19,
-					id: 3
+					age: 19
 				},
 				customer4: {
+					id: 4,
 					firstname: "Saroj",
 					lastname: "Saini",
-					age: 50,
-					id: 4
+					age: 50
 				}
 			}
 
-exports.create = function(req, res) {
-	var newCustomer = req.body;
-    customers["customer" + newCustomer.id] = newCustomer;
-	console.log("--->After Post, customers:\n" + JSON.stringify(customers, null, 4));
-    res.end("Post Successfully: \n" + JSON.stringify(newCustomer, null, 4));
-};
-
-exports.findAll = function(req, res) {
-    console.log("--->Find All: \n" + JSON.stringify(customers, null, 4));
-    res.end("All Customers: \n" + JSON.stringify(customers, null, 4));  
-};
-
-exports.findOne = function(req, res) {
-    var customer = customers["customer" + req.params.id];
-    console.log("--->Find customer: \n" + JSON.stringify(customer, null, 4));
-    res.end( "Find a Customer:\n" + JSON.stringify(customer, null, 4));
-};
-
-exports.update = function(req, res) {
-	var id = parseInt(req.params.id);
-	var updatedCustomer = req.body; 
-	if(customers["customer" + id] != null){
-		// update data
-		customers["customer" + id] = updatedCustomer;
-
-		console.log("--->Update Successfully, customers: \n" + JSON.stringify(customers, null, 4))
-		
-		// return
-		res.end("Update Successfully! \n" + JSON.stringify(updatedCustomer, null, 4));
-	}else{
-		res.end("Don't Exist Customer:\n:" + JSON.stringify(updatedCustomer, null, 4));
-	}
-};
-
-exports.delete = function(req, res) {
-	var deleteCustomer = customers["customer" + req.params.id];
-    delete customers["customer" + req.params.id];
-    console.log("--->After deletion, customer list:\n" + JSON.stringify(customers, null, 4) );
-    res.end( "Deleted customer: \n" + JSON.stringify(deleteCustomer, null, 4));
-};
+			exports.create = function(req, res) {
+				// find the largest ID
+				let arr = Object.keys( customers ).map(function ( key ) { return customers[key].id; });
+				let newId = Math.max.apply( null, arr ) + 1;
+				
+				let newCustomer = req.body;
+				newCustomer.id = newId;
+				customers["customer" + newId] = newCustomer;
+				res.json(newCustomer);
+			};
+			 
+			exports.findAll = function(req, res) {
+				res.json(Object.values(customers));  
+			};
+			 
+			exports.findOne = function(req, res) {
+				let customer = customers["customer" + req.params.id];
+				res.json(customer);
+			};
+			 
+			exports.update = function(req, res) {
+				let updatedCustomer = req.body; 
+				customers["customer" + updatedCustomer.id] = updatedCustomer;
+				res.json({msg: "Customer Updated Successfully!"});
+			};
+			 
+			exports.delete = function(req, res) {
+				delete customers["customer" + req.params.id];
+				res.json({msg: "Customer Deleted Successfully!"});
+			};
